@@ -1,5 +1,4 @@
 import { useState } from "react"
-import type { NextPage, GetServerSideProps } from "next"
 import { useSession } from "next-auth/react"
 import { connect } from "../lib/database"
 import Layout from "../components/layout"
@@ -7,7 +6,7 @@ import AccessDenied from "../components/access-denied"
 
 import { postData } from "../utils/postData"
 
-const Page: NextPage = ({ tasksFromServer, NEXTAUTH_URL }) => {
+const Page = ({ tasksFromServer, NEXTAUTH_URL }) => {
   const [tasks, setTasks] = useState(JSON.parse(tasksFromServer))
 
   const { data: session, status } = useSession()
@@ -18,7 +17,6 @@ const Page: NextPage = ({ tasksFromServer, NEXTAUTH_URL }) => {
 
   const handlClick = async () => {
     const body = {
-      uid: session.user.email,
       name: "new task",
       description: "description",
       dueDate: "",
@@ -26,6 +24,10 @@ const Page: NextPage = ({ tasksFromServer, NEXTAUTH_URL }) => {
       activities: [],
       checklists: [],
       files: [],
+    }
+
+    if (session && session.user) {
+      body.uid = session.user.email
     }
 
     const response = await postData(`${NEXTAUTH_URL}/api/tasks`, body)
@@ -57,7 +59,7 @@ const Page: NextPage = ({ tasksFromServer, NEXTAUTH_URL }) => {
   )
 }
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
+export const getServerSideProps = async (context) => {
   const { db } = await connect()
 
   const collection = db.collection("tasks")
