@@ -7,7 +7,7 @@ import styles from "./header.module.css"
 // rendering, and avoids any flash incorrect content on initial page load.
 export default function Header() {
   const { data: session, status } = useSession()
-  const loading = status === 'loading'
+  const loading = status === "loading"
 
   return (
     <header>
@@ -82,6 +82,11 @@ export default function Header() {
           <li className={styles.navItem}>
             <Link href="/protected">
               <a>Protected</a>
+            </Link>
+          </li>
+          <li className={styles.navItem}>
+            <Link href="/dashboard">
+              <a>Dashboard</a>
             </Link>
           </li>
           <li className={styles.navItem}>
