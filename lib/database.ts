@@ -9,7 +9,8 @@ const client = new MongoClient(
 )
 
 async function connect() {
-  //   if (!client.isConnected()) await client.connect()
+  // if (!client.isConnected()) await client.connect()
+
   await client.connect()
 
   const db = client.db("gtd")

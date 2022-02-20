@@ -23,7 +23,9 @@
   ],
   "license": "ISC",
   "prettier": {
-    "semi": false
+    "semi": false,
+    "sinsingleQuote": true,
+    "tabWidth": 2
   },
   "dependencies": {
     "mongodb": "^4.4.0",
