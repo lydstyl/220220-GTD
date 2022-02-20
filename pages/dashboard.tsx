@@ -63,7 +63,12 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const collection = db.collection("tasks")
 
   const documents = await collection.find({}).toArray()
-  const tasksFromServer = JSON.stringify(documents)
+  const documentsWithId = documents.map((d) => ({
+    ...d,
+    _id: JSON.stringify(d._id),
+  }))
+
+  const tasksFromServer = JSON.stringify(documentsWithId)
 
   return {
     props: { tasksFromServer, NEXTAUTH_URL: process.env.NEXTAUTH_URL },
