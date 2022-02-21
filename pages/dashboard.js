@@ -57,29 +57,31 @@ const Page = ({ tasksFromServer, NEXTAUTH_URL }) => {
 
 export const getServerSideProps = async (context) => {
   try {
-    // const { db } = await connect()
+    ////
+    const { db } = await connect()
 
-    // const collection = db.collection("tasks")
+    const collection = db.collection("tasks")
 
-    // const documents = await collection.find({}).toArray()
-    // const documentsWithId = documents.map((d) => ({
-    //   ...d,
-    //   _id: d._id.toString(),
-    // }))
+    const documents = await collection.find({}).toArray()
+    const documentsWithId = documents.map((d) => ({
+      ...d,
+      _id: d._id.toString(),
+    }))
+    ////
 
-    const documentsWithId = [
-      {
-        _id: "123",
-        uid: "lydstyl@gmail.com",
-        name: "new task",
-        description: "description",
-        dueDate: "",
-        labels: [],
-        activities: [],
-        checklists: [],
-        files: [],
-      },
-    ]
+    // const documentsWithId = [
+    //   {
+    //     _id: "123",
+    //     uid: "lydstyl@gmail.com",
+    //     name: "new task",
+    //     description: "description",
+    //     dueDate: "",
+    //     labels: [],
+    //     activities: [],
+    //     checklists: [],
+    //     files: [],
+    //   },
+    // ]
 
     return {
       props: {
