@@ -16,3 +16,11 @@ export async function postData(url = "", data = {}) {
   })
   return response.json() // parses JSON response into native JavaScript objects
 }
+
+export async function deleteData(url = "") {
+  const response = await fetch(url, {
+    method: "DELETE",
+  })
+
+  return response.json()
+}

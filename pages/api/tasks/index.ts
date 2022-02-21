@@ -1,11 +1,6 @@
 import { getSession } from "next-auth/react"
 import type { NextApiRequest, NextApiResponse } from "next"
-import { connect } from "../../lib/database"
-
-interface Haiku {
-  title: string
-  content: string
-}
+import { connect } from "../../../lib/database"
 
 export default async function handler(
   req: NextApiRequest,
@@ -20,7 +15,7 @@ export default async function handler(
         const body = req.body
 
         const { db } = await connect()
-        const haiku = db.collection<Haiku>("tasks")
+        const haiku = db.collection("tasks")
         const result = await haiku.insertOne(body)
 
         const { insertedId } = result
@@ -50,8 +45,7 @@ export default async function handler(
         msg: `Something whent wrong.`,
       })
     }
-  }
-  {
+  } else {
     res.send({
       error: "You must be sign in to view the protected content on this page.",
     })

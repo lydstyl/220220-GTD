@@ -4,7 +4,7 @@ import { connect } from "../lib/database"
 import Layout from "../components/layout"
 import AccessDenied from "../components/access-denied"
 
-import { postData } from "../utils/postData"
+import { postData, deleteData } from "../utils/CRUD"
 
 const Page = ({ tasksFromServer, NEXTAUTH_URL }) => {
   const [tasks, setTasks] = useState(tasksFromServer)
@@ -15,7 +15,7 @@ const Page = ({ tasksFromServer, NEXTAUTH_URL }) => {
   // When rendering client side don't display anything until loading is complete
   if (typeof window !== "undefined" && loading) return null
 
-  const handlClick = async () => {
+  const addTask = async () => {
     const body = {
       name: "new task",
       description: "description",
@@ -34,6 +34,12 @@ const Page = ({ tasksFromServer, NEXTAUTH_URL }) => {
     setTasks([...tasks, body])
   }
 
+  const removeTask = async (id) => {
+    await deleteData(`${NEXTAUTH_URL}/api/tasks/${id}`)
+
+    setTasks(tasks.filter((task) => task._id !== id))
+  }
+
   // If no session exists, display access denied message
   if (!session) {
     return (
@@ -48,7 +54,15 @@ const Page = ({ tasksFromServer, NEXTAUTH_URL }) => {
     <Layout>
       <h1>Dashboard Protected Page</h1>
 
-      <button onClick={handlClick}>Add a task</button>
+      <button onClick={addTask}>Add a task</button>
+
+      <ul>
+        {tasks.map((task) => (
+          <li onClick={() => removeTask(task._id)} key={task._id}>
+            {task._id} / {task.uid} / {task.name}
+          </li>
+        ))}
+      </ul>
 
       <pre>{JSON.stringify(tasks, null, 4)}</pre>
     </Layout>
@@ -57,7 +71,6 @@ const Page = ({ tasksFromServer, NEXTAUTH_URL }) => {
 
 export const getServerSideProps = async (context) => {
   try {
-    ////
     const { db } = await connect()
 
     const collection = db.collection("tasks")
@@ -67,26 +80,11 @@ export const getServerSideProps = async (context) => {
       ...d,
       _id: d._id.toString(),
     }))
-    ////
-
-    // const documentsWithId = [
-    //   {
-    //     _id: "123",
-    //     uid: "lydstyl@gmail.com",
-    //     name: "new task",
-    //     description: "description",
-    //     dueDate: "",
-    //     labels: [],
-    //     activities: [],
-    //     checklists: [],
-    //     files: [],
-    //   },
-    // ]
 
     return {
       props: {
         tasksFromServer: documentsWithId,
-        NEXTAUTH_URL: process.env.NEXTAUTH_URL, // process.env.NODE_ENV==='production' ?
+        NEXTAUTH_URL: process.env.NEXTAUTH_URL,
         session: await getSession(context),
       },
     }
