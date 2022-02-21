@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { useSession } from "next-auth/react"
+import { useSession, getSession } from "next-auth/react"
 import { connect } from "../lib/database"
 import Layout from "../components/layout"
 import AccessDenied from "../components/access-denied"
@@ -60,23 +60,44 @@ const Page = ({ tasksFromServer, NEXTAUTH_URL }) => {
 }
 
 export const getServerSideProps = async (context) => {
-  const { db } = await connect()
+  try {
+    const { db } = await connect()
 
-  const collection = db.collection("tasks")
+    const collection = db.collection("tasks")
 
-  const documents = await collection.find({}).toArray()
-  const documentsWithId = documents.map((d) => ({
-    ...d,
-    _id: d._id.toString(),
-  }))
+    const documents = await collection.find({}).toArray()
+    const documentsWithId = documents.map((d) => ({
+      ...d,
+      _id: d._id.toString(),
+    }))
 
-  return {
-    props: {
-      tasksFromServer: documentsWithId,
-      // NEXTAUTH_URL: process.env.NEXTAUTH_URL,
-      NEXTAUTH_URL: "https://gabgtd.vercel.app/",
-    },
+    console.log(`gb🚀 ~ documentsWithId ~ documentsWithId`, documentsWithId)
+
+    return {
+      props: {
+        tasksFromServer: documentsWithId,
+        // NEXTAUTH_URL: process.env.NEXTAUTH_URL,
+        NEXTAUTH_URL: "https://gabgtd.vercel.app/",
+        session: await getSession(context),
+      },
+    }
+  } catch (error) {
+    console.log(`gb🚀 ~ getServerSideProps ~ error`, error)
   }
+
+  // [
+  //   {
+  //     _id: '62129dd3c8aa692e30c687ae',
+  //     uid: 'lydstyl@gmail.com',
+  //     name: 'new task',
+  //     description: 'description',
+  //     dueDate: '',
+  //     labels: [],
+  //     activities: [],
+  //     checklists: [],
+  //     files: []
+  //   }
+  // ]
 }
 
 export default Page
