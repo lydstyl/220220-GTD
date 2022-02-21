@@ -16,22 +16,22 @@ const Page = ({ tasksFromServer, NEXTAUTH_URL }) => {
   if (typeof window !== "undefined" && loading) return null
 
   const handlClick = async () => {
-    // const body = {
-    //   name: "new task",
-    //   description: "description",
-    //   dueDate: "",
-    //   labels: [],
-    //   activities: [],
-    //   checklists: [],
-    //   files: [],
-    // }
-    // if (session && session.user) {
-    //   body.uid = session.user.email
-    // }
-    // const response = await postData(`${NEXTAUTH_URL}/api/tasks`, body)
-    // body._id = response.insertedId
-    // // show all tasks with the new one
-    // setTasks([...tasks, body])
+    const body = {
+      name: "new task",
+      description: "description",
+      dueDate: "",
+      labels: [],
+      activities: [],
+      checklists: [],
+      files: [],
+    }
+    if (session && session.user) {
+      body.uid = session.user.email
+    }
+    const response = await postData(`${NEXTAUTH_URL}/api/tasks`, body)
+    body._id = response.insertedId
+    // show all tasks with the new one
+    setTasks([...tasks, body])
   }
 
   // If no session exists, display access denied message
@@ -80,7 +80,6 @@ export const getServerSideProps = async (context) => {
         files: [],
       },
     ]
-    console.log(`gb🚀 ~ documentsWithId ~ documentsWithId`, documentsWithId)
 
     return {
       props: {
