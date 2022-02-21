@@ -86,7 +86,7 @@ export const getServerSideProps = async (context) => {
     return {
       props: {
         tasksFromServer: documentsWithId,
-        NEXTAUTH_URL: process.env.NEXTAUTH_URL,
+        NEXTAUTH_URL: process.env.NEXTAUTH_URL, // process.env.NODE_ENV==='production' ?
         session: await getSession(context),
       },
     }
