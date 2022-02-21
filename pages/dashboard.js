@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { useSession, getSession } from "next-auth/react"
-import { connect } from "../lib/database"
+// import { connect } from "../lib/database"
 import Layout from "../components/layout"
 import AccessDenied from "../components/access-denied"
 
@@ -16,26 +16,22 @@ const Page = ({ tasksFromServer, NEXTAUTH_URL }) => {
   if (typeof window !== "undefined" && loading) return null
 
   const handlClick = async () => {
-    const body = {
-      name: "new task",
-      description: "description",
-      dueDate: "",
-      labels: [],
-      activities: [],
-      checklists: [],
-      files: [],
-    }
-
-    if (session && session.user) {
-      body.uid = session.user.email
-    }
-
-    const response = await postData(`${NEXTAUTH_URL}/api/tasks`, body)
-
-    body._id = response.insertedId
-
-    // show all tasks with the new one
-    setTasks([...tasks, body])
+    // const body = {
+    //   name: "new task",
+    //   description: "description",
+    //   dueDate: "",
+    //   labels: [],
+    //   activities: [],
+    //   checklists: [],
+    //   files: [],
+    // }
+    // if (session && session.user) {
+    //   body.uid = session.user.email
+    // }
+    // const response = await postData(`${NEXTAUTH_URL}/api/tasks`, body)
+    // body._id = response.insertedId
+    // // show all tasks with the new one
+    // setTasks([...tasks, body])
   }
 
   // If no session exists, display access denied message
@@ -61,16 +57,29 @@ const Page = ({ tasksFromServer, NEXTAUTH_URL }) => {
 
 export const getServerSideProps = async (context) => {
   try {
-    const { db } = await connect()
+    // const { db } = await connect()
 
-    const collection = db.collection("tasks")
+    // const collection = db.collection("tasks")
 
-    const documents = await collection.find({}).toArray()
-    const documentsWithId = documents.map((d) => ({
-      ...d,
-      _id: d._id.toString(),
-    }))
+    // const documents = await collection.find({}).toArray()
+    // const documentsWithId = documents.map((d) => ({
+    //   ...d,
+    //   _id: d._id.toString(),
+    // }))
 
+    const documentsWithId = [
+      {
+        _id: "123",
+        uid: "lydstyl@gmail.com",
+        name: "new task",
+        description: "description",
+        dueDate: "",
+        labels: [],
+        activities: [],
+        checklists: [],
+        files: [],
+      },
+    ]
     console.log(`gb🚀 ~ documentsWithId ~ documentsWithId`, documentsWithId)
 
     return {
@@ -84,20 +93,6 @@ export const getServerSideProps = async (context) => {
   } catch (error) {
     console.log(`gb🚀 ~ getServerSideProps ~ error`, error)
   }
-
-  // [
-  //   {
-  //     _id: '62129dd3c8aa692e30c687ae',
-  //     uid: 'lydstyl@gmail.com',
-  //     name: 'new task',
-  //     description: 'description',
-  //     dueDate: '',
-  //     labels: [],
-  //     activities: [],
-  //     checklists: [],
-  //     files: []
-  //   }
-  // ]
 }
 
 export default Page
