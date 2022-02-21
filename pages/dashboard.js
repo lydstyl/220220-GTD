@@ -73,7 +73,8 @@ export const getServerSideProps = async (context) => {
   const tasksFromServer = JSON.stringify(documentsWithId)
 
   return {
-    props: { tasksFromServer, NEXTAUTH_URL: process.env.NEXTAUTH_URL },
+    // props: { tasksFromServer, NEXTAUTH_URL: process.env.NEXTAUTH_URL },
+    props: { tasksFromServer, NEXTAUTH_URL: "https://gabgtd.vercel.app/" },
   }
 }
 
