@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { useSession, getSession } from "next-auth/react"
-// import { connect } from "../lib/database"
+import { connect } from "../lib/database"
 import Layout from "../components/layout"
 import AccessDenied from "../components/access-denied"
 
@@ -57,7 +57,7 @@ const Page = ({ tasksFromServer, NEXTAUTH_URL }) => {
 
 export const getServerSideProps = async (context) => {
   try {
-    // const { db } = await connect()
+    const { db } = await connect()
 
     // const collection = db.collection("tasks")
 
