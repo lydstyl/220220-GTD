@@ -57,7 +57,7 @@ const Page = ({ tasksFromServer, NEXTAUTH_URL }) => {
 
 export const getServerSideProps = async (context) => {
   try {
-    const { db } = await connect()
+    // const { db } = await connect()
 
     // const collection = db.collection("tasks")
 
