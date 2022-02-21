@@ -1,5 +1,4 @@
 import { useState } from "react"
-import type { NextPage, GetServerSideProps } from "next"
 import { useSession, getSession } from "next-auth/react"
 import { connect } from "../lib/database"
 import Layout from "../components/layout"
@@ -7,7 +6,7 @@ import AccessDenied from "../components/access-denied"
 
 import { postData, deleteData } from "../utils/CRUD"
 
-const Page: NextPage = ({ tasksFromServer, NEXTAUTH_URL }) => {
+const Page = ({ tasksFromServer, NEXTAUTH_URL }) => {
   const [tasks, setTasks] = useState(tasksFromServer)
 
   const { data: session, status } = useSession()
@@ -70,7 +69,7 @@ const Page: NextPage = ({ tasksFromServer, NEXTAUTH_URL }) => {
   )
 }
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
+export const getServerSideProps = async (context) => {
   try {
     const { db } = await connect()
 
