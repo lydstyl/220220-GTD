@@ -7,7 +7,7 @@ import AccessDenied from "../components/access-denied"
 import { postData } from "../utils/postData"
 
 const Page = ({ tasksFromServer, NEXTAUTH_URL }) => {
-  const [tasks, setTasks] = useState(JSON.parse(tasksFromServer))
+  const [tasks, setTasks] = useState(tasksFromServer)
 
   const { data: session, status } = useSession()
   const loading = status === "loading"
@@ -67,14 +67,15 @@ export const getServerSideProps = async (context) => {
   const documents = await collection.find({}).toArray()
   const documentsWithId = documents.map((d) => ({
     ...d,
-    _id: JSON.stringify(d._id),
+    _id: d._id.toString(),
   }))
 
-  const tasksFromServer = JSON.stringify(documentsWithId)
-
   return {
-    // props: { tasksFromServer, NEXTAUTH_URL: process.env.NEXTAUTH_URL },
-    props: { tasksFromServer, NEXTAUTH_URL: "https://gabgtd.vercel.app/" },
+    props: {
+      tasksFromServer: documentsWithId,
+      // NEXTAUTH_URL: process.env.NEXTAUTH_URL,
+      NEXTAUTH_URL: "https://gabgtd.vercel.app/",
+    },
   }
 }
 
