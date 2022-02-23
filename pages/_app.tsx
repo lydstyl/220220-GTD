@@ -5,28 +5,67 @@ import type { AppProps } from "next/app"
 import "./styles.css"
 
 export const CounterContext = createContext<
-  [number, React.Dispatch<{ type: string }>] | null
+  [State, React.Dispatch<{ type: string }>] | null
 >(null)
+export interface Action {
+  type: string
+  [key: string]: any // payload can have different names
+}
 
-const reducer = (state: number, action: { type: string }) => {
+export interface Task {
+  _id: string
+  uid: string
+  name: string
+  description: string
+  dueDate: string
+  links?: []
+  labels?: []
+  activities?: []
+  checklists?: []
+  files?: []
+}
+
+export interface State {
+  tasks: Task[]
+  isLoading: boolean
+  hasError: boolean
+  message?: string
+}
+
+const reducer = (state: State, action: Action) => {
   switch (action.type) {
-    case "add":
-      return state + 1
-    case "subtract":
-      return state - 1
+    case "setLoading":
+      state = { ...state, isLoading: action.isLoading }
+      return state
+    case "setTasks":
+      state = { ...state, tasks: action.payload, isLoading: false }
+      return state
+    case "addTask":
+      state = {
+        ...state,
+        tasks: [...state.tasks, action.payload],
+        isLoading: false,
+      }
+      return state
+    case "removeTask":
+      state = {
+        ...state,
+        tasks: [...state.tasks.filter((task) => task._id !== action.taskId)],
+        isLoading: false,
+      }
+      return state
     default:
       return state
   }
 }
 
-export interface Action<T, P> {
-  readonly type: T
-  readonly payload?: P
-}
-
 const CounterContextProvider: FC = ({ children }) => (
   <CounterContext.Provider
-    value={useReducer<React.Reducer<number, { type: string }>>(reducer, 0)}
+    value={useReducer<React.Reducer<State, { type: string }>>(reducer, {
+      tasks: [],
+      isLoading: false,
+      hasError: false,
+    })}
   >
     {children}
   </CounterContext.Provider>

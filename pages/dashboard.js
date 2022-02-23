@@ -1,4 +1,4 @@
-import { useState, useContext } from "react"
+import { useContext, useEffect } from "react"
 import { useSession, getSession } from "next-auth/react"
 import { CounterContext } from "./_app"
 import { connect } from "../lib/database"
@@ -10,17 +10,19 @@ import { postData, deleteData } from "../utils/CRUD"
 
 const Page = ({ tasksFromServer, NEXTAUTH_URL }) => {
   const { data: session, status } = useSession()
-  const [counter, dispatch] = useContext(CounterContext)
-
-  const [tasks, setTasks] = useState(tasksFromServer)
+  const [state, dispatch] = useContext(CounterContext)
 
   const loading = status === "loading"
-
   // When rendering client side don't display anything until loading is complete
   if (typeof window !== "undefined" && loading) return null
 
+  useEffect(() => {
+    dispatch({ type: "setLoading", isLoading: true })
+    dispatch({ type: "setTasks", payload: tasksFromServer })
+  }, [])
+
   const addTask = async () => {
-    const body = {
+    const newTask = {
       name: "new task",
       description: "description",
       dueDate: "",
@@ -30,23 +32,29 @@ const Page = ({ tasksFromServer, NEXTAUTH_URL }) => {
       files: [],
     }
     if (session && session.user) {
-      body.uid = session.user.email
+      newTask.uid = session.user.email
     }
-    const response = await postData(`${NEXTAUTH_URL}/api/tasks`, body)
-    body._id = response.insertedId
 
-    dispatch({
-      type: "add",
-    })
+    try {
+      dispatch({ type: "setLoading", isLoading: true })
+      const response = await postData(`${NEXTAUTH_URL}/api/tasks`, newTask)
+      newTask._id = response.insertedId
 
-    // show all tasks with the new one
-    setTasks([...tasks, body])
+      dispatch({ type: "addTask", payload: newTask })
+    } catch (error) {
+      console.log(`gb🚀 ~ addTask ~ error`, error)
+    }
   }
 
-  const removeTask = async (id) => {
-    await deleteData(`${NEXTAUTH_URL}/api/tasks/${id}`)
+  const removeTask = async (taskId) => {
+    try {
+      dispatch({ type: "setLoading", isLoading: true })
+      await deleteData(`${NEXTAUTH_URL}/api/tasks/${taskId}`)
 
-    setTasks(tasks.filter((task) => task._id !== id))
+      dispatch({ type: "removeTask", taskId })
+    } catch (error) {
+      console.log(`gb🚀 ~ removeTask ~ error`, error)
+    }
   }
 
   // If no session exists, display access denied message
@@ -62,21 +70,20 @@ const Page = ({ tasksFromServer, NEXTAUTH_URL }) => {
   return (
     <Layout>
       <h1>Dashboard Protected Page</h1>
+      {state.isLoading && <h2>Loading...</h2>}
 
       <button onClick={addTask}>Add a task</button>
-      <p>{counter}</p>
+      <pre>{JSON.stringify(state, null, 4)}</pre>
 
       <TaskList />
 
       <ul>
-        {tasks.map((task) => (
+        {state.tasks.map((task) => (
           <li onClick={() => removeTask(task._id)} key={task._id}>
             {task._id} / {task.uid} / {task.name}
           </li>
         ))}
       </ul>
-
-      <pre>{JSON.stringify(tasks, null, 4)}</pre>
     </Layout>
   )
 }
