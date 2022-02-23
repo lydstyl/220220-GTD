@@ -1,15 +1,19 @@
-import { useState } from "react"
+import { useState, useContext } from "react"
 import { useSession, getSession } from "next-auth/react"
+import { CounterContext } from "./_app"
 import { connect } from "../lib/database"
 import Layout from "../components/layout"
 import AccessDenied from "../components/access-denied"
+import TaskList from "../components/taskList"
 
 import { postData, deleteData } from "../utils/CRUD"
 
 const Page = ({ tasksFromServer, NEXTAUTH_URL }) => {
+  const { data: session, status } = useSession()
+  const [counter, dispatch] = useContext(CounterContext)
+
   const [tasks, setTasks] = useState(tasksFromServer)
 
-  const { data: session, status } = useSession()
   const loading = status === "loading"
 
   // When rendering client side don't display anything until loading is complete
@@ -30,6 +34,11 @@ const Page = ({ tasksFromServer, NEXTAUTH_URL }) => {
     }
     const response = await postData(`${NEXTAUTH_URL}/api/tasks`, body)
     body._id = response.insertedId
+
+    dispatch({
+      type: "add",
+    })
+
     // show all tasks with the new one
     setTasks([...tasks, body])
   }
@@ -55,6 +64,9 @@ const Page = ({ tasksFromServer, NEXTAUTH_URL }) => {
       <h1>Dashboard Protected Page</h1>
 
       <button onClick={addTask}>Add a task</button>
+      <p>{counter}</p>
+
+      <TaskList />
 
       <ul>
         {tasks.map((task) => (
