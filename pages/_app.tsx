@@ -4,7 +4,7 @@ import { SessionProvider } from "next-auth/react"
 import type { AppProps } from "next/app"
 import "./styles.css"
 
-export const CounterContext = createContext<
+export const TasksContext = createContext<
   [State, React.Dispatch<{ type: string }>] | null
 >(null)
 export interface Action {
@@ -74,8 +74,8 @@ const reducer = (state: State, action: Action) => {
   }
 }
 
-const CounterContextProvider: FC = ({ children }) => (
-  <CounterContext.Provider
+const TasksContextProvider: FC = ({ children }) => (
+  <TasksContext.Provider
     value={useReducer<React.Reducer<State, { type: string }>>(reducer, {
       tasks: [],
       isLoading: false,
@@ -83,7 +83,7 @@ const CounterContextProvider: FC = ({ children }) => (
     })}
   >
     {children}
-  </CounterContext.Provider>
+  </TasksContext.Provider>
 )
 
 export default function App({ Component, pageProps }: AppProps) {
@@ -93,9 +93,9 @@ export default function App({ Component, pageProps }: AppProps) {
       // you have a short session maxAge time. Shown here with default values.
       session={pageProps.session}
     >
-      <CounterContextProvider>
+      <TasksContextProvider>
         <Component {...pageProps} />
-      </CounterContextProvider>
+      </TasksContextProvider>
     </SessionProvider>
   )
 }

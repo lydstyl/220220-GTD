@@ -1,6 +1,6 @@
 import { useContext, useEffect } from "react"
 import { useSession, getSession } from "next-auth/react"
-import { CounterContext } from "./_app"
+import { TasksContext } from "./_app"
 import { connect } from "../lib/database"
 import Layout from "../components/layout"
 import AccessDenied from "../components/access-denied"
@@ -10,11 +10,11 @@ import { postData, deleteData } from "../utils/CRUD"
 
 const Page = ({ tasksFromServer, NEXTAUTH_URL }) => {
   const { data: session, status } = useSession()
-  const [state, dispatch] = useContext(CounterContext)
+  const [state, dispatch] = useContext(TasksContext)
 
-  const loading = status === "loading"
+  const isSessionLoading = status === "loading"
   // When rendering client side don't display anything until loading is complete
-  if (typeof window !== "undefined" && loading) return null
+  if (typeof window !== "undefined" && isSessionLoading) return null
 
   useEffect(() => {
     dispatch({ type: "setLoading", isLoading: true })
