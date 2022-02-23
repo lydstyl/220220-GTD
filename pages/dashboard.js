@@ -43,6 +43,10 @@ const Page = ({ tasksFromServer, NEXTAUTH_URL }) => {
       dispatch({ type: "addTask", payload: newTask })
     } catch (error) {
       console.log(`gb🚀 ~ addTask ~ error`, error)
+      dispatch({
+        type: "setError",
+        message: "Something when wrong while adding a new task.",
+      })
     }
   }
 
@@ -71,6 +75,7 @@ const Page = ({ tasksFromServer, NEXTAUTH_URL }) => {
     <Layout>
       <h1>Dashboard Protected Page</h1>
       {state.isLoading && <h2>Loading...</h2>}
+      {state.hasError && <h2>ERROR : {state.message}</h2>}
 
       <button onClick={addTask}>Add a task</button>
       <pre>{JSON.stringify(state, null, 4)}</pre>

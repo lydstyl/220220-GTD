@@ -37,12 +37,26 @@ const reducer = (state: State, action: Action) => {
     case "setLoading":
       state = { ...state, isLoading: action.isLoading }
       return state
+    case "setError":
+      state = {
+        ...state,
+        hasError: true,
+        message: action.message,
+        isLoading: false,
+      }
+      return state
     case "setTasks":
-      state = { ...state, tasks: action.payload, isLoading: false }
+      state = {
+        ...state,
+        hasError: false,
+        tasks: action.payload,
+        isLoading: false,
+      }
       return state
     case "addTask":
       state = {
         ...state,
+        hasError: false,
         tasks: [...state.tasks, action.payload],
         isLoading: false,
       }
@@ -50,6 +64,7 @@ const reducer = (state: State, action: Action) => {
     case "removeTask":
       state = {
         ...state,
+        hasError: false,
         tasks: [...state.tasks.filter((task) => task._id !== action.taskId)],
         isLoading: false,
       }
