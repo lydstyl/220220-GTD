@@ -1,12 +1,14 @@
-import { useReducer, createContext } from "react"
+import React, { useReducer, createContext, FC } from "react"
 
 import { SessionProvider } from "next-auth/react"
 import type { AppProps } from "next/app"
 import "./styles.css"
 
-export const CounterContext = createContext(null)
+export const CounterContext = createContext<
+  [number, React.Dispatch<{ type: string }>] | null
+>(null)
 
-const reducer = (state, action) => {
+const reducer = (state: number, action: { type: string }) => {
   switch (action.type) {
     case "add":
       return state + 1
@@ -17,14 +19,19 @@ const reducer = (state, action) => {
   }
 }
 
-const CounterContextProvider = ({ children }) => (
-  <CounterContext.Provider value={useReducer(reducer, 0)}>
+export interface Action<T, P> {
+  readonly type: T
+  readonly payload?: P
+}
+
+const CounterContextProvider: FC = ({ children }) => (
+  <CounterContext.Provider
+    value={useReducer<React.Reducer<number, { type: string }>>(reducer, 0)}
+  >
     {children}
   </CounterContext.Provider>
 )
 
-// Use the <SessionProvider> to improve performance and allow components that call
-// `useSession()` anywhere in your application to access the `session` object.
 export default function App({ Component, pageProps }: AppProps) {
   return (
     <SessionProvider
